@@ -1,0 +1,72 @@
+args <- commandArgs()
+# define arguments
+setwd <- args[6]
+xfile <- args[7]
+yfile <- args[8]
+npc <- as.numeric(args[9])
+nfolds <- as.numeric(args[10])
+beginsparam <- as.numeric(args[11])
+endsparam <- as.numeric(args[12])
+numsparam <- as.numeric(args[13])
+kernel <- args[14]
+niter <- as.numeric(args[15])
+trace <- as.numeric(args[16])
+balance <- as.numeric(args[17])
+cat("setwd: ",setwd,"\n")
+cat("xfile: ", xfile,"\n")
+cat("yfile: ",yfile,"\n")
+cat("npc: ",npc,"\n")
+cat("nfolds: ",nfolds,"\n")
+cat("beginparam: ",beginsparam,"\n")
+cat("endparam: ",endsparam,"\n")
+cat("numparam: ",numsparam,"\n")
+cat("kernel: ",kernel,"\n")
+cat("niter: ",niter,"\n")
+cat("trace: ",trace,"\n")
+cat("balance: ",balance,"\n")
+## check parameters
+cat("read in arguments \n")
+cat("about to read in data \n")
+X <- read.table(xfile)
+Y <- read.table(yfile)
+X <- as.matrix(X)
+Y <- as.matrix(Y)
+cat("read in data \n")
+n <- nrow(X)
+p <- ncol(X)
+cat("label data \n")
+colnames(X) <-paste0("x",c(1:p))
+colnames(Y) <- "y"
+
+if(nrow(Y)!=n) stop("number of observations in predictors and response must match")
+if(beginsparam < 1) stop("beginsparam must be greater than or equal to one")
+if(endsparam > p) stop("endsparam must be less than or equal to the number of predictors")
+endsparam <- sqrt(endsparam)
+numsparam <- numsparam-1
+interval <- (endsparam-beginsparam)/numsparam
+sp.arg <- seq(from=beginsparam,to=endsparam, by=interval)
+if(kernel!="linear" && kernel!="delta") stop("Please select a valid kernel")
+df <- data.frame(Y,X)
+n.sp <- length(sp.arg)
+cat("set up arguments \n")
+if(kernel=="delta" && part.balance){
+  df.partition <- groupdata2::fold(data=df,k=nfolds,cat_col = "y")
+} else{
+  df.partition <- groupdata2::fold(data=df,k=nfolds)
+}
+cat("partitioned data \n")
+fold.arg <- c(1:nfolds)
+param.grid <- expand.grid(fold.arg,sp.arg)
+colnames(param.grid) <- c("fold.arg","sp.arg")
+cat("set up argument grid \n")
+fpath <- paste(setwd,"temp",sep="")
+dfpath <- paste(fpath,"/df.txt",sep="")
+parampath <- paste(fpath,"/param.txt",sep="")
+spath <- paste(fpath,"/sparg.txt",sep="")
+cat("set up paths \n")
+write.table(df.partition,file=dfpath,row.names = F,col.names = T,quote=F)
+cat("save partitioned data \n")
+write.table(param.grid,file=parampath,row.names = F,col.names = T,quote=F)
+cat("save parameter grid \n")
+write.table(sp.arg,file=spath,quote=F)
+cat("save sparse argument vector \n")
