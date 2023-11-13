@@ -78,5 +78,5 @@ while true; do
   esac
 done
 module load R/4.3.0-openblas
-Rscript prelim_data_sspca_param.R $setwd $xfile $yfile $npc $nfolds $beginsparam $endsparam $numsparam $kernel $niter $trace $balance
+Rscript ${setwd}prelim_data_sspca_param.R $setwd $xfile $yfile $npc $nfolds $beginsparam $endsparam $numsparam $kernel $niter $trace $balance
 exit 0
