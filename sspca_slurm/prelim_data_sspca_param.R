@@ -49,7 +49,7 @@ if(kernel!="linear" && kernel!="delta") stop("Please select a valid kernel")
 df <- data.frame(Y,X)
 n.sp <- length(sp.arg)
 cat("set up arguments \n")
-if(kernel=="delta" && part.balance){
+if(kernel=="delta" && balance){
   df.partition <- groupdata2::fold(data=df,k=nfolds,cat_col = "y")
 } else{
   df.partition <- groupdata2::fold(data=df,k=nfolds)
