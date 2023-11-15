@@ -4,8 +4,8 @@
 getopt -T &>/dev/null
 if [[ $? -ne 4 ]]; then echo "Getopt is too old!" >&2 ; exit 1 ; fi
 
-declare {setwd,memarg,temparg,timearg,xfile,yfile,npc,nfolds,beginsparam,endsparam,numsparam,kernel,niter,trace,balance}
-OPTS=$(getopt -u -o '' -a --longoptions 'setwd:,memarg:,temparg:,timearg:,xfile:,yfile:,npc:,nfolds:,beginsparam:,endsparam:,numsparam:,kernel:,niter:,trace:,balance:' -n "$0" -- "$@")
+declare {setwd,memarg,temparg,timearg,xfile,yfile,npc,nfolds,sparams,stype,kernel,niter,trace,balance}
+OPTS=$(getopt -u -o '' -a --longoptions 'setwd:,memarg:,temparg:,timearg:,xfile:,yfile:,npc:,nfolds:,sparams:,stype:,kernel:,niter:,trace:,balance:' -n "$0" -- "$@")
     # *** Added -o '' ; surrounted the longoptions by ''
 if [[ $? -ne 0 ]] ; then echo "Failed parsing options." >&2 ; exit 1 ; fi
     # *** This has to be right after the OPTS= assignment or $? will be overwritten
@@ -47,16 +47,12 @@ while true; do
         	nfolds=$2
         	shift 2
         	;;
-	--beginsparam )
-		beginsparam=$2
+	--sparams )
+		sparams=$2
 		shift 2
 		;;
-	--endsparam )
-		endsparam=$2
-		shift 2
-		;;
-	--numsparam )
-		numsparam=$2
+	--stype )
+		stype=$2
 		shift 2
 		;;
 	--kernel )
@@ -97,7 +93,7 @@ echo "balance: $balance"
 module load R/4.3.0-openblas
 mkdir ${setwd}temp
 mkdir ${setwd}temp/sbatch_logs
-sbatch --time $timearg --mem $memarg --tmp $temparg --job-name data_partition --output ${setwd}temp/sbatch_logs/data_partition.out --error ${setwd}temp/sbatch_logs/data_partition.err ${setwd}prelim_data_sspca_r.sh --setwd $setwd --xfile $xfile --yfile $yfile --npc $npc --nfolds $nfolds --beginsparam $beginsparam --endsparam $endsparam --numsparam $numsparam --kernel $kernel --niter $niter --trace $trace --balance $balance
+sbatch --time $timearg --mem $memarg --tmp $temparg --job-name data_partition --output ${setwd}temp/sbatch_logs/data_partition.out --error ${setwd}temp/sbatch_logs/data_partition.err ${setwd}prelim_data_sspca_r.sh --setwd $setwd --xfile $xfile --yfile $yfile --npc $npc --nfolds $nfolds --sparams $sparams --stype $stype --kernel $kernel --niter $niter --trace $trace --balance $balance
 tempvar=temp/param.txt
 paramdir=$setwd$tempvar
 until [ -f $paramdir ]
@@ -113,7 +109,7 @@ indexarray=$(seq -s ' ' 1 $numrows)
 mkdir ${setwd}temp/cv_outputs
 for i in $indexarray
 do
-sbatch --time $timearg --mem $memarg --tmp $temparg --job-name cv_job_${i} --output ${setwd}/temp/sbatch_logs/cv_job_${i}.out --error ${setwd}/temp/sbatch_logs/cv_job_${i}.err ${setwd}cv_partition_sspca.sh --setwd $setwd --index $i --npc $npc --nfolds $nfolds --kernel $kernel --niter $niter --trace $trace
+sbatch --time $timearg --mem $memarg --tmp $temparg --job-name cv_job_${i} --output ${setwd}/temp/sbatch_logs/cv_job_${i}.out --error ${setwd}/temp/sbatch_logs/cv_job_${i}.err ${setwd}cv_partition_sspca.sh --setwd $setwd --index $i --npc $npc --nfolds $nfolds --kernel $kernel --stype $stype --niter $niter --trace $trace
 echo "Submitted Job: $i"
 sleep 0.5
 done
