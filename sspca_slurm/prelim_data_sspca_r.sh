@@ -11,8 +11,8 @@
 getopt -T &>/dev/null
 if [[ $? -ne 4 ]]; then echo "Getopt is too old!" >&2 ; exit 1 ; fi
 
-declare {setwd,xfile,yfile,npc,nfolds,beginsparam,endsparam,numsparam,kernel,niter,trace,balance}
-OPTS=$(getopt -u -o '' -a --longoptions 'setwd:,xfile:,yfile:,npc:,nfolds:,beginsparam:,endsparam:,numsparam:,kernel:,niter:,trace:,balance:' -n "$0" -- "$@")
+declare {setwd,xfile,yfile,npc,nfolds,sparams,stype,kernel,niter,trace,balance}
+OPTS=$(getopt -u -o '' -a --longoptions 'setwd:,xfile:,yfile:,npc:,nfolds:,sparams:,stype:,kernel:,niter:,trace:,balance:' -n "$0" -- "$@")
     # *** Added -o '' ; surrounted the longoptions by ''
 if [[ $? -ne 0 ]] ; then echo "Failed parsing options." >&2 ; exit 1 ; fi
     # *** This has to be right after the OPTS= assignment or $? will be overwritten
@@ -42,16 +42,12 @@ while true; do
         	nfolds=$2
         	shift 2
         	;;
-	--beginsparam )
-		beginsparam=$2
+	--sparams )
+		sparams=$2
 		shift 2
 		;;
-	--endsparam )
-		endsparam=$2
-		shift 2
-		;;
-	--numsparam )
-		numsparam=$2
+	--stype )
+		stype=$2
 		shift 2
 		;;
 	--kernel )
@@ -78,5 +74,5 @@ while true; do
   esac
 done
 module load R/4.3.0-openblas
-Rscript ${setwd}prelim_data_sspca_param.R $setwd $xfile $yfile $npc $nfolds $beginsparam $endsparam $numsparam $kernel $niter $trace $balance
+Rscript ${setwd}prelim_data_sspca_param.R $setwd $xfile $yfile $npc $nfolds $sparams $stype $kernel $niter $trace $balance
 exit 0
