@@ -5,13 +5,12 @@ xfile <- args[7]
 yfile <- args[8]
 npc <- as.numeric(args[9])
 nfolds <- as.numeric(args[10])
-beginsparam <- as.numeric(args[11])
-endsparam <- as.numeric(args[12])
-numsparam <- as.numeric(args[13])
-kernel <- args[14]
-niter <- as.numeric(args[15])
-trace <- as.numeric(args[16])
-balance <- as.numeric(args[17])
+sparams <- args[11]
+stype <- args[12
+kernel <- args[13]
+niter <- as.numeric(args[14])
+trace <- as.numeric(args[15])
+balance <- as.numeric(args[16])
 cat("setwd: ",setwd,"\n")
 cat("xfile: ", xfile,"\n")
 cat("yfile: ",yfile,"\n")
