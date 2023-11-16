@@ -6,7 +6,7 @@ yfile <- args[8]
 npc <- as.numeric(args[9])
 nfolds <- as.numeric(args[10])
 sparams <- args[11]
-stype <- args[12
+stype <- args[12]
 kernel <- args[13]
 niter <- as.numeric(args[14])
 trace <- as.numeric(args[15])
@@ -16,9 +16,8 @@ cat("xfile: ", xfile,"\n")
 cat("yfile: ",yfile,"\n")
 cat("npc: ",npc,"\n")
 cat("nfolds: ",nfolds,"\n")
-cat("beginparam: ",beginsparam,"\n")
-cat("endparam: ",endsparam,"\n")
-cat("numparam: ",numsparam,"\n")
+cat("sparams: ",sparams,"\n")
+cat("stype: ",stype,"\n")
 cat("kernel: ",kernel,"\n")
 cat("niter: ",niter,"\n")
 cat("trace: ",trace,"\n")
@@ -30,6 +29,7 @@ X <- read.table(xfile)
 Y <- read.table(yfile)
 X <- as.matrix(X)
 Y <- as.matrix(Y)
+spm <- read.table(file=sparams, header=F) |> as.matrix() |> as.vector()
 cat("read in data \n")
 n <- nrow(X)
 p <- ncol(X)
@@ -38,12 +38,20 @@ colnames(X) <-paste0("x",c(1:p))
 colnames(Y) <- "y"
 
 if(nrow(Y)!=n) stop("number of observations in predictors and response must match")
-if(beginsparam < 1) stop("beginsparam must be greater than or equal to one")
-if(endsparam > p) stop("endsparam must be less than or equal to the number of predictors")
-endsparam <- sqrt(endsparam)
-numsparam <- numsparam-1
-interval <- (endsparam-beginsparam)/numsparam
-sp.arg <- seq(from=beginsparam,to=endsparam, by=interval)
+
+if(stype!="loadings" && stype!="sumabs") stop("Please select a valid sparsity type")
+
+if(stype=="loadings"){
+    if(min(spm) < 1) stop("minimum number of nonzero loadings must be greater than or equal to one")
+    if(max(spm) > p) stop("maximum number of nonzero loadings must be less than or equal to the number of predictors")
+    sp.arg <- spm
+  }
+  if(stype=="sumabs"){
+    if(min(spm) < 1) stop("minimum number of nonzero loadings must be greater than or equal to one")
+    if(max(spm) > sqrt(p)) stop("maximum number of nonzero loadings must be less than or equal to the square root of the number of predictors")
+    sp.arg <- spm
+  }
+
 if(kernel!="linear" && kernel!="delta") stop("Please select a valid kernel")
 df <- data.frame(Y,X)
 n.sp <- length(sp.arg)
