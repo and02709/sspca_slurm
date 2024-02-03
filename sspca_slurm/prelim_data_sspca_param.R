@@ -26,16 +26,23 @@ cat("balance: ",balance,"\n")
 cat("read in arguments \n")
 cat("about to read in data \n")
 X <- read.table(xfile)
+cat("successfully loaded X data \n")
 Y <- read.table(yfile)
+cat("successfully loaded Y data \n")
 X <- as.matrix(X)
+cat("converted X to matrix \n")
 Y <- as.matrix(Y)
+cat("converted Y to matrix \n")
 spm <- read.table(file=sparams, header=F) |> as.matrix() |> as.vector()
-cat("read in data \n")
+cat("read in sparse data \n")
+cat("read in and converted all data \n")
 n <- nrow(X)
 p <- ncol(X)
+cat("determining n and p \n")
 cat("label data \n")
 colnames(X) <-paste0("x",c(1:p))
 colnames(Y) <- "y"
+cat("data successfully loaded \n")
 
 if(nrow(Y)!=n) stop("number of observations in predictors and response must match")
 
@@ -51,17 +58,20 @@ if(stype=="loadings"){
     if(max(spm) > sqrt(p)) stop("maximum number of nonzero loadings must be less than or equal to the square root of the number of predictors")
     sp.arg <- spm
   }
+cat("successfully passed QC sparse parameters step \n")
 
 if(kernel!="linear" && kernel!="delta") stop("Please select a valid kernel")
 df <- data.frame(Y,X)
+cat("combined Y and X into dataframe \n")
 n.sp <- length(sp.arg)
+cat("count number of sparse arguments to cross-validate \n")
 cat("set up arguments \n")
 if(kernel=="delta" && balance){
   df.partition <- groupdata2::fold(data=df,k=nfolds,cat_col = "y")
 } else{
   df.partition <- groupdata2::fold(data=df,k=nfolds)
 }
-cat("partitioned data \n")
+cat("partitioned data successfully \n")
 fold.arg <- c(1:nfolds)
 param.grid <- expand.grid(fold.arg,sp.arg)
 colnames(param.grid) <- c("fold.arg","sp.arg")
