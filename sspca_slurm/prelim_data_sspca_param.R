@@ -25,7 +25,7 @@ cat("balance: ",balance,"\n")
 ## check parameters
 cat("read in arguments \n")
 cat("about to read in data \n")
-X <- read.table(xfile)
+X <- read.table(xfile, header=T)
 cat("successfully loaded X data \n")
 Y <- read.table(yfile)
 cat("successfully loaded Y data \n")
