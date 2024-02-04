@@ -62,5 +62,5 @@ while true; do
   esac
 done
 module load R/4.3.0-openblas
-Rscript job_cv_sspca.R $setwd $index $npc $nfolds $stype $kernel $niter $trace
+Rscript ${setwd}/job_cv_sspca.R $setwd $index $npc $nfolds $stype $kernel $niter $trace
 exit 0
