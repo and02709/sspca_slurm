@@ -34,5 +34,5 @@ while true; do
   esac
 done
 module load R/4.3.0-openblas
-Rscript cv_analysis_SSPCA.R $setwd
+Rscript ${setwd}cv_analysis_SSPCA.R $setwd
 exit 0
